@@ -1,0 +1,93 @@
+import numpy
+import numpy as np
+from matplotlib import pyplot as plt
+
+class walker:
+    def __init__(self, x0, ndim=1, step_size=1.0):
+        self.pos = x0
+        self.ndim = ndim
+        self.possibleSteps = []
+        for i in range(ndim):
+            step = numpy.zeros(ndim)
+            step[i] = - step_size
+            self.possibleSteps.append(numpy.array(step, dtype='f'))
+            step[i] = + step_size
+            self.possibleSteps.append(step.copy())
+        self.npossible = len(self.possibleSteps)
+
+    def pickStep(self):
+        istep = numpy.random.choice(range(self.npossible))
+        return self.possibleSteps[istep]
+
+    def doSteps(self, n):
+        positions = np.zeros((n + 1, self.ndim))
+        positions[0] = self.pos
+
+        for i in range(1, n + 1):
+            path = self.pickStep()
+            self.pos = self.pos + path
+            positions[i] = self.pos
+
+        return positions
+
+
+n_steps_list = [10, 100, 500]
+step_size = 0.05
+ndim = 2
+nwalkers = 500
+rand_pos = numpy.random.uniform(size=(nwalkers, ndim))
+colours = ['red','green', 'blue']
+
+plt.figure(figsize=(18, 6))
+
+diffpositions = []
+
+for i in range(len(rand_pos)):
+    w=walker(numpy.zeros(1), ndim=2)
+    w.pos=rand_pos[i]
+    ys=w.doSteps(n_steps_list[0])
+    diffpositions.append(ys)
+positions = [ys[-1] for ys in diffpositions]
+
+plt.subplot(1, 3, 1)
+plt.scatter([j[0] for j in positions], [j[1] for j in positions], alpha = 0.4, color = colours[0])
+plt.title('particles after 10 steps')
+plt.xlabel('x posn')
+plt.ylabel('y posn')
+plt.xlim((-40, 40))
+plt.ylim((-40, 40))
+
+diffpositions = []
+
+for i in range(len(rand_pos)):
+    w=walker(numpy.zeros(1), ndim=2)
+    w.pos=rand_pos[i]
+    ys=w.doSteps(n_steps_list[1])
+    diffpositions.append(ys)
+positions = [ys[-1] for ys in diffpositions]
+
+plt.subplot(1, 3, 2)
+plt.scatter([j[0] for j in positions], [j[1] for j in positions], alpha = 0.4, color = colours[1])
+plt.title('particles after 100 steps')
+plt.xlabel('x posn')
+plt.ylabel('y posn')
+plt.xlim((-40, 40))
+plt.ylim((-40, 40))
+
+diffpositions = []
+
+for i in range(len(rand_pos)):
+    w=walker(numpy.zeros(1), ndim=2)
+    w.pos=rand_pos[i]
+    ys=w.doSteps(n_steps_list[2])
+    diffpositions.append(ys)
+positions = [ys[-1] for ys in diffpositions]
+
+plt.subplot(1, 3, 3)
+plt.scatter([j[0] for j in positions], [j[1] for j in positions], alpha = 0.4, color = colours[2])
+plt.title('particles after 500 steps')
+plt.xlabel('x posn')
+plt.ylabel('y posn')
+plt.xlim((-40, 40))
+plt.ylim((-40, 40))
+plt.show()
